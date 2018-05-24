@@ -11,6 +11,7 @@
 int scanDuration = 10; //In seconds
 
 #define base_topic "happy-bubbles/ble/" room "/raw/"
+#define clientID "esp" room //unique clientID for each ESP32. using "room" variable
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -63,7 +64,7 @@ void sendToMqtt(BLEAdvertisedDevice advertisedDevice) {
   StaticJsonBuffer<500> JSONbuffer;
   JsonObject& JSONencoder = JSONbuffer.createObject();
 
-  JSONencoder["hostname"] = "living-room";
+  JSONencoder["hostname"] = room;
   JSONencoder["mac"] = macTransformed.c_str();
   JSONencoder["rssi"] = rssi;
   JSONencoder["is_scan_response"] = "0";
@@ -110,7 +111,7 @@ void setup() {
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
 
-    if (client.connect("ESP32Client", mqttUser, mqttPassword )) {
+    if (client.connect(clientID, mqttUser, mqttPassword )) {
 
       Serial.println("connected");
 
@@ -138,7 +139,7 @@ void reconnect() {
     // Attempt to connect
     // If you do not want to use a username and password, change next line to
     // if (client.connect("ESP8266Client")) {
-    if (client.connect("ESP32Client", mqttUser, mqttPassword )) {
+    if (client.connect(clientID, mqttUser, mqttPassword )) {
       Serial.println("connected");
     } else {
       Serial.print("failed, rc=");
